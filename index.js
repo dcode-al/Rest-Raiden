@@ -1480,16 +1480,9 @@ app.get('/api/hblowjob', async (req, res) => {
   var response = await fetch(`https://api.waifu.pics/nsfw/blowjob`);
     var data = await response.json();
     var { url: result } = data;
-    var requestSettings = {
-        url: result,
-        method: 'GET',
-        encoding: null
-    };
-    request(requestSettings, function (error, response, body) {
-        res.set('Content-Type', 'image/png');
-        res.send(body);
-});
-});
+  await res.set("Content-Type", "image/png")
+      await res.send(result)
+    });
 
 app.use((err, req, res, next) => {
   console.log(err.stack);
