@@ -1479,11 +1479,12 @@ created_at: tanggal(Date.now())
 app.get('/api/hblowjob', async (req, res) => {
   var response = await fetch(`https://api.waifu.pics/nsfw/blowjob`);
     var data = await response.json();
-    const image = await getBuffer(data.url)
+    var { url: result } = data;
+  const image = await getBuffer(result)
       if (!image) res.json("Error!")
       await res.set("Content-Type", "image/png")
       await res.send(image)
-    })
+    });
 
 app.use((err, req, res, next) => {
   console.log(err.stack);
