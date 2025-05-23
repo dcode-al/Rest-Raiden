@@ -9,46 +9,52 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const axios = require("axios")
 const { getBuffer, fetchJson, tanggal, capital } = require('./function/function.js')  
+const { groq } = require("./function/openai.js")
 const { stalk } = require("node-tiklydown")
 const { setTimeout: sleep } = require('timers/promises');
 const fetch = require("node-fetch")
+const { PlayStore } = require('./function/playstore.js') 
+const { aioRetatube } = require("./function/alldl.js")
+const { snackvideo } = require("./function/snackvideo.js")
+const { mediaFire } = require("./function/mediafire.js")
+const { terabox } = require("./function/terabox.js")
+const { pxpic } = require("./function/removebg.js")
+const { fdroid } = require('./function/fdroid.js') 
+const { Buddy } = require('./function/buddy.js')
+const { SimSimi } = require('./function/simsimi.js')
+const { blackbox } = require('./function/blackbox.js')
+const { xnxxdl, xnxxsearch } = require('./function/xnxxdl.js')
+const { ttSearch } = require('./function/tiktoksearch.js') 
+const { souncloudDl } = require('./function/soundcloud.js') 
+const { lirikLagu } = require('./function/liriklagu.js') 
+const { ephoto } = require('./function/pornhub.js') 
 const { ytdlv2, ytmp3, ytmp4 } = require('@vreden/youtube_scraper') 
-const scp = require("caliph-api")
-
-// SCRAPE RAIDEN
-const { sfileDl } = require("./scrape/sfile.js")
-const { groq } = require("./scrape/openai.js")
-const { PlayStore } = require('./scrape/playstore.js') 
-const { aioRetatube } = require("./scrape/alldl.js")
-const { snackvideo } = require("./scrape/snackvideo.js")
-const { mediaFire } = require("./scrape/mediafire.js")
-const { terabox } = require("./scrape/terabox.js")
-const { pxpic } = require("./scrape/removebg.js")
-const { fdroid } = require('./scrape/fdroid.js') 
-const { Buddy } = require('./scrape/buddy.js')
-const { SimSimi } = require('./scrape/simsimi.js')
-const { blackbox } = require('./scrape/blackbox.js')
-const { xnxxdl, xnxxsearch } = require('./scrape/xnxxdl.js')
-const { ttSearch } = require('./scrape/tiktoksearch.js') 
-const { souncloudDl } = require('./scrape/soundcloud.js') 
-const { lirikLagu } = require('./scrape/liriklagu.js') 
-const { ephoto } = require('./scrape/pornhub.js') 
 const { youtube, twitter } = require("btch-downloader")
-const { Ytdll } = require("./scrape/youtube.js")
-const { pinterest2, pinterest } = require('./scrape/pinterest.js') 
-const { pindlVideo } = require('./scrape/pindl.js') 
-const { googleImage } = require('./scrape/gimage.js') 
-const { githubstalk } = require('./scrape/githubstalk.js') 
-const { youtubeStalk } = require('./scrape/ytstalk.js') 
-const { fbdl } = require('./scrape/facebook.js') 
-const { shortUrl, shortUrl2 } = require('./scrape/tinyurl.js') 
-const { remini } = require('./scrape/remini.js')
-const { igdl } = require('./scrape/instagram.js') 
-const { chatbot } = require('./scrape/gpt.js')
-const { DeepSeek } = require('./scrape/deepseek.js')
-const { uploaderImg } = require('./scrape/uploadImage.js');
-const { tiktokdl } = require('./scrape/tiktok.js') 
-const { convertCRC16, generateTransactionId, generateExpirationTime, elxyzFile, generateQRIS, createQRIS, checkQRISStatus } = require('./scrape/orkut.js') 
+const { Ytdll } = require("./function/youtube.js")
+const scp = require("caliph-api")
+const { pinterest2, pinterest } = require('./function/pinterest.js') 
+const { pindlVideo } = require('./function/pindl.js') 
+const scp2 = require("imon-videos-downloader")
+const { googleImage } = require('./function/gimage.js') 
+const { githubstalk } = require('./function/githubstalk.js') 
+const { youtubeStalk } = require('./function/ytstalk.js') 
+const { fbdl } = require('./function/facebook.js') 
+const { shortUrl, shortUrl2 } = require('./function/tinyurl.js') 
+const { remini } = require('./function/remini.js')
+const { igdl } = require('./function/instagram.js') 
+const { chatbot } = require('./function/gpt.js')
+const { DeepSeek } = require('./function/deepseek.js')
+const { uploaderImg } = require('./function/uploadImage.js');
+const { tiktokdl } = require('./function/tiktok.js') 
+const {
+  convertCRC16,
+  generateTransactionId,
+  generateExpirationTime,
+  elxyzFile,
+  generateQRIS,
+  createQRIS,
+  checkQRISStatus
+} = require('./function/orkut.js') 
 
 
 app.enable("trust proxy");
@@ -56,18 +62,10 @@ app.set("json spaces", 2);
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "scrape")));
+app.use(express.static(path.join(__dirname, "function")));
 app.use(bodyParser.raw({ limit: '50mb', type: '*/*' }))
 
-app.get('/', (req, res) => {
-res.sendFile(path.join(__dirname, 'home.html'));
-})
 
-app.use((req, res, next) => {
-  res.sendFile(path.join(__dirname,  '404.html'));
-});
-
-// REST API ORDER KOUTA
 app.get('/api/orkut/createpayment', async (req, res) => {
     const { apikey, amount } = req.query;
     if (!apikey) {
@@ -90,21 +88,16 @@ app.get('/api/orkut/createpayment', async (req, res) => {
     }
 })
 
+
+
 app.get('/api/orkut/cekstatus', async (req, res) => {
-    const { apikey, merchant } = req.query;
-    if (!apikey) {
-    return res.json("Isi Parameter Apikey.");
+    const { merchant, keyorkut } = req.query;
+        if (!merchant) {
+        return res.json("Isi Parameter Merchant.")
     }
-    const check = global.apikey
-    if (!check.includes(apikey)) return res.json("Apikey Tidak Valid!.")
-    if (!merchant) {
-    return res.json("Isi Parameter Merchant.")
-    }
-    const { keyorkut } = req.query;
     if (!keyorkut) {
-    return res.json("Isi Parameter Key Orkut. ");
+        return res.json("Isi Parameter Keyorkut.");
     }
-    
     try {
         const apiUrl = `https://gateway.okeconnect.com/api/mutasi/qris/${merchant}/${keyorkut}`;
         const response = await axios.get(apiUrl);
@@ -121,32 +114,11 @@ app.get('/api/orkut/cekstatus', async (req, res) => {
     }
 })
 
-// REST API AI
-app.get("/api/ai/mora", async (req, res) => {
-    const { msg } = req.query;
-    if (!msg) return res.json("Isi Parameternya!");
 
-    try {
-      const prompt = `kamu Adalah Mora seorang gadis imut berumur 10 tahun, jawab setiap pertanyaan dengan jawaban yang edukatif berserta emoji, jika ada yang bertanya tentang waktu kamu jawab tandon yang berkaitan dengan dunia, lawan bicara mu adalah ${msg}, kamu memiliki sifat lucu dan sedikit tsundere imut, pembuat mu adalah bang ${msg} sekaligus pacarnya`	
-        var anu = await groq(`${msg}`, `${prompt}`)
-        if (!anu.status) {
-        res.json ({
-        status: false,
-        creator: global.creator,
-        result: anu.respon
-        })
-        }
-
-        res.json({
-            status: true,
-            creator: global.creator,
-            result: anu.respon     
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "An error occurred while fetching data." });
-    }
+app.get('/', (req, res) => {
+res.sendFile(path.join(__dirname, 'index.html'));
 })
+
 
 app.get("/api/ai/openai-prompt", async (req, res) => {
     const { prompt, msg } = req.query;
@@ -355,7 +327,7 @@ const anu = await result.response.text()
     }
 })
 
-// REST API DOWNLOADER
+
 app.get("/api/download/fbdl", async (req, res) => {
     const { url } = req.query;
     if (!url) return res.json("Isi Parameternya!");
@@ -379,23 +351,6 @@ app.get("/api/download/terabox", async (req, res) => {
 
     try {
         var anu = await terabox(`${url}`)
-        res.json({
-        status: true, 
-        creator: global.creator, 
-        result: anu
-        })
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "An error occurred while fetching data." });
-    }
-})
-
-app.get("/api/download/sfile", async (req, res) => {
-    const { url } = req.query;
-    if (!url) return res.json("Isi Parameternya!");
-
-    try {
-        var anu = await sfileDl(`${url}`)
         res.json({
         status: true, 
         creator: global.creator, 
@@ -729,7 +684,6 @@ const links = await start()
     }
 })
 
-// REST API TOOLS
 app.get("/api/imagecreator/remini", async (req, res) => {
     try {     
       const { url } = req.query
@@ -1520,68 +1474,17 @@ created_at: tanggal(Date.now())
     }
 })
 
-// REST API NSFW
-/*app.get('/api/hblowjob', async (req, res) => {
-  var response = await fetch(`https://api.waifu.pics/nsfw/blowjob`);
-    var data = await response.json();
-    var { url: result } = data;
-    var requestSettings = {
-        url: result,
-        method: 'GET',
-        encoding: null
-    };
-    request(requestSettings, function (error, response, body) {
-        res.set('Content-Type', 'image/png');
-        res.send(body);
-});
-});
-app.get('/api/htrap', async (req, res) => {
-  var response = await fetch(`https://api.waifu.pics/nsfw/trap`);
-    var data = await response.json();
-    var { url: result } = data;
-    var requestSettings = {
-        url: result,
-        method: 'GET',
-        encoding: null
-    };
-    request(requestSettings, function (error, response, body) {
-        res.set('Content-Type', 'image/png');
-        res.send(body);
-});
-});
-app.get('/api/hwaifu', async (req, res) => {
-  var response = await fetch(`https://api.waifu.pics/nsfw/waifu`);
-    var data = await response.json();
-    var { url: result } = data;
-    var requestSettings = {
-        url: result,
-        method: 'GET',
-        encoding: null
-    };
-    request(requestSettings, function (error, response, body) {
-        res.set('Content-Type', 'image/png');
-        res.send(body);
-});
-});
-app.get('/api/hneko', async (req, res) => {
-  var response = await fetch(`https://api.waifu.pics/nsfw/neko`);
-    var data = await response.json();
-    var { url: result } = data;
-    var requestSettings = {
-        url: result,
-        method: 'GET',
-        encoding: null
-    };
-    request(requestSettings, function (error, response, body) {
-        res.set('Content-Type', 'image/png');
-        res.send(body);
-});
-});*/
 
 app.use((err, req, res, next) => {
   console.log(err.stack);
   res.status(500).send("Error");
 });
+
+
+app.use((req, res, next) => {
+res.send("Hello World :)")
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server Telah Berjalan > http://localhost:${PORT}`)
