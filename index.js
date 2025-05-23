@@ -2,6 +2,7 @@ require("./settings.js")
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const request = require('request');
 const crypto = require("crypto")
 const bodyParser = require('body-parser');
 const fs = require("fs");
@@ -65,6 +66,13 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "function")));
 app.use(bodyParser.raw({ limit: '50mb', type: '*/*' }))
 
+app.get('/', (req, res) => {
+res.sendFile(path.join(__dirname, 'home.html'));
+})
+
+app.use((req, res, next) => {
+res.sendFile(path.join(__dirname, '404.html'));
+});
 
 app.get('/api/orkut/createpayment', async (req, res) => {
     const { apikey, amount } = req.query;
@@ -113,12 +121,6 @@ app.get('/api/orkut/cekstatus', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 })
-
-
-app.get('/', (req, res) => {
-res.sendFile(path.join(__dirname, 'index.html'));
-})
-
 
 app.get("/api/ai/openai-prompt", async (req, res) => {
     const { prompt, msg } = req.query;
@@ -1493,12 +1495,6 @@ app.use((err, req, res, next) => {
   console.log(err.stack);
   res.status(500).send("Error");
 });
-
-
-app.use((req, res, next) => {
-res.send("Hello World :)")
-});
-
 
 app.listen(PORT, () => {
   console.log(`Server Telah Berjalan > http://localhost:${PORT}`)
