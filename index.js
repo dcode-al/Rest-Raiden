@@ -116,7 +116,7 @@ app.get('/api/orkut/cekstatus', async (req, res) => {
 
 
 app.get('/', (req, res) => {
-res.sendFile(path.join(__dirname, 'home.html'));
+res.sendFile(path.join(__dirname, 'index.html'));
 })
 
 
@@ -1474,6 +1474,20 @@ created_at: tanggal(Date.now())
     }
 })
 
+app.get('/api/hblowjob', async (req, res) => {
+  var response = await fetch(`https://api.waifu.pics/nsfw/blowjob`);
+    var data = await response.json();
+    var { url: result } = data;
+    var requestSettings = {
+        url: result,
+        method: 'GET',
+        encoding: null
+    };
+    request(requestSettings, function (error, response, body) {
+        res.set('Content-Type', 'image/png');
+        res.send(body);
+});
+});
 
 app.use((err, req, res, next) => {
   console.log(err.stack);
